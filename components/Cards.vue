@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-for="item in items" :key="item.id" class="card">
+    <div v-if="items" v-for="item in items" :key="item.id" class="card">
       <div class="card__left">
         <img :src="item.img" alt="Product image" />
         <div class="content">
@@ -67,28 +67,18 @@
         </div>
       </div>
     </div>
+    <div v-else class="card">
+      <h1>Ничего не найдено по запросу</h1>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import data from "../data/data.json";
+import { computed } from "vue";
+import { useCardsStore } from "../stores/cards";
 
-interface Item {
-  id: number;
-  type: string;
-  title: string;
-  address: string;
-  seller: string;
-  productType: string;
-  description: string;
-  price: string;
-  quantity: string;
-  pricePerUnit: string;
-  img: string;
-}
-
-const items = ref<Item[]>(data as Item[]);
+const store = useCardsStore();
+const items = computed(() => store.getItems);
 </script>
 
 <style lang="scss" scoped>

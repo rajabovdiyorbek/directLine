@@ -1,7 +1,7 @@
 <template>
   <header class="navbar">
     <div class="navbar__item">
-      <NuxtLink to="/favorite" class="navbar__link" active-class="active">
+      <NuxtLink to="/favorites" class="navbar__link" active-class="active">
         <svg
           class="navbar__icon"
           width="20"
