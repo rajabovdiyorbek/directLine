@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <div v-for="item in 10" :key="item" class="card">
+    <div v-for="item in items" :key="item.id" class="card">
       <div class="card__left">
-        <img src="~/assets/img/product-img.jpg" alt="Product image" />
+        <img :src="item.img" alt="Product image" />
         <div class="content">
-          <div class="types">Аукцион</div>
-          <div class="content__title">Пиломатериалы брус доска</div>
+          <div class="types">{{ item.type }}</div>
+          <div class="content__title">{{ item.title }}</div>
           <div class="address">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -20,33 +20,30 @@
                 d="M7.5 14.5C7.5 14.5 12.5 9.40909 12.5 5.59091C12.5 2.66213 10.2614 0.5 7.5 0.5C4.73858 0.5 2.5 2.66213 2.5 5.59091C2.5 9.40909 7.5 14.5 7.5 14.5ZM7.49979 7.86848C8.68326 7.86848 9.64265 6.87879 9.64265 5.65795C9.64265 4.43711 8.68326 3.44743 7.49979 3.44743C6.31632 3.44743 5.35693 4.43711 5.35693 5.65795C5.35693 6.87879 6.31632 7.86848 7.49979 7.86848Z"
                 fill="#969DC3"
               /></svg
-            >Санкт-Петербург, Красное Село
+            >{{ item.address }}
           </div>
           <div class="horis__group">
-            <span class="title">Продавец</span> <span>Торговый Дом ГОСТ</span>
+            <span class="title">Продавец</span> <span>{{ item.seller }}</span>
           </div>
           <div class="vert__group">
-            <span class="title">Вид товара</span> <span>Стройматериалы</span>
+            <span class="title">Вид товара</span>
+            <span>{{ item.productType }}</span>
           </div>
           <div class="description">
-            Пиломатериалы брус доска. Распродажа пиломатериалов в связи
-            закрытием ЛЕСО-БАЗЫ! Успейте приобрести пиломатериал со скидками до
-            закрытия 01.06.2022 ! Мы стараемся быть не такими как все и даем
-            вам: Доставка в согласованный день, если переносим - доставка
-            бесплатно за наш счет. Весь материал соответствует гостам. Вы можете
-            проверить пиломатериалы на складе или на адресе. Если материал не
-            соответствует заявленному качеству - бесплатно меняем его.
+            {{ item.description }}
           </div>
         </div>
       </div>
       <div class="card__right">
         <div class="info">
-          <div class="price">33 000 ₽</div>
+          <div class="price">{{ item.price }}</div>
           <div class="horis__group">
-            <span class="title">Количество</span> <span>3 шт.</span>
+            <span class="title">Количество</span>
+            <span>{{ item.quantity }}</span>
           </div>
           <div class="horis__group">
-            <span class="title">Стоимость за штуку</span> <span>11 000 ₽</span>
+            <span class="title">Стоимость за штуку</span>
+            <span>{{ item.pricePerUnit }}</span>
           </div>
         </div>
         <div class="buttons">
@@ -73,7 +70,26 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+import data from "../data/data.json";
+
+interface Item {
+  id: number;
+  type: string;
+  title: string;
+  address: string;
+  seller: string;
+  productType: string;
+  description: string;
+  price: string;
+  quantity: string;
+  pricePerUnit: string;
+  img: string;
+}
+
+const items = ref<Item[]>(data as Item[]);
+</script>
 
 <style lang="scss" scoped>
 .container {
@@ -81,6 +97,7 @@
   margin: auto;
   .card {
     display: flex;
+    justify-content: space-between;
     max-width: 1166px;
     height: 366px;
     margin: 40px 17px;
@@ -124,10 +141,10 @@
           color: #2d3b87;
         }
         .address {
-          max-width: 238px;
+          display: inline-flex;
+          align-self: flex-start;
           font-size: 13px;
           font-style: normal;
-          display: flex;
           align-items: center;
           padding: 4px 8px;
           gap: 3px;
@@ -135,6 +152,7 @@
           background: #f4f5f9;
           color: #616ca5;
         }
+
         .horis__group {
           font-size: 13px;
           .title {
