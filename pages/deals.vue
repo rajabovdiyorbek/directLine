@@ -1,4 +1,5 @@
 <template>
+  <SearchTabs />
   <div>deals</div>
 </template>
 

@@ -1,4 +1,5 @@
 <template>
+  <SearchTabs />
   <div>favorite</div>
 </template>
 
