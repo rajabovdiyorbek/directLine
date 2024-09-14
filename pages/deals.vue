@@ -1,6 +1,6 @@
 <template>
   <SearchTabs />
-  <div>deals</div>
+  <Cards />
 </template>
 
 <script setup></script>

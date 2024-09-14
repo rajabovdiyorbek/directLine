@@ -1,6 +1,6 @@
 <template>
   <SearchTabs />
-  <div>favorite</div>
+  <Cards />
 </template>
 
 <script setup></script>

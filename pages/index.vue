@@ -1,6 +1,6 @@
 <template>
   <SearchTabs />
-  <div>main</div>
+  <Cards />
 </template>
 
 <script setup lang="ts"></script>
