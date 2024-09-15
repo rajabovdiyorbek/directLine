@@ -29,23 +29,7 @@ const onSearchChanged = (newSearchTerm: string) => {
   searchTerm.value = newSearchTerm;
 };
 
-const filteredDealsItems = computed(() => {
-  let filteredDeals = store.getDeals;
-
-  if (currentType.value !== "Все типы") {
-    filteredDeals = filteredDeals.filter(
-      (deal) => deal.type === currentType.value
-    );
-  }
-
-  if (searchTerm.value) {
-    filteredDeals = filteredDeals.filter((deal) =>
-      deal.title.toLowerCase().includes(searchTerm.value)
-    );
-  }
-
-  return filteredDeals;
-});
+const filteredDealsItems = computed(() => store.getFilteredDeals);
 </script>
 
 <style lang="scss" scoped></style>

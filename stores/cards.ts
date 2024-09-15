@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
 import data from '../data/data.json';
 
 interface Card {
@@ -15,78 +16,99 @@ interface Card {
     img: string;
 }
 
-export const useCardsStore = defineStore('cards', {
-    state: () => ({
-        items: data as Card[],
-        favorites: [] as Card[],
-        deals: [] as Card[],
-        paidDeals: [] as Card[],
-        searchTerm: '', // Для поиска
-        selectedType: 'Все типы', // Для фильтрации по типу
-    }),
-    actions: {
-        addFavorite(card: Card) {
-            if (!this.favorites.some(fav => fav.id === card.id)) {
-                this.favorites.push(card);
-            }
-        },
-        removeFavorite(cardId: number) {
-            this.favorites = this.favorites.filter(fav => fav.id !== cardId);
-        },
-        toggleFavorite(card: Card) {
-            const isFavorite = this.favorites.some(fav => fav.id === card.id);
-            if (isFavorite) {
-                this.removeFavorite(card.id);
-            } else {
-                this.addFavorite(card);
-            }
-        },
-        addDeal(card: Card) {
-            if (!this.deals.some(deal => deal.id === card.id)) {
-                this.deals.push(card);
-            }
-        },
-        payDeal(cardId: number) {
-            const deal = this.deals.find(deal => deal.id === cardId);
-            if (deal && !this.paidDeals.some(paidDeal => paidDeal.id === cardId)) {
-                this.paidDeals.push(deal);
-            }
-        },
-        searchCards(term: string) {
-            this.searchTerm = term.toLowerCase();
-        },
-        filterByType(type: string) {
-            this.selectedType = type;
-        },
-    },
-    getters: {
-        getAllItems: (state) => {
-            let filteredItems = state.items;
+export const useCardsStore = defineStore('cards', () => {
+    // State
+    const items = ref<Card[]>(data);
+    const favorites = ref<Card[]>([]);
+    const deals = ref<Card[]>([]);
+    const paidDeals = ref<Card[]>([]);
+    const searchTerm = ref<string>('');
+    const selectedType = ref<string>('Все типы');
 
-            if (state.selectedType !== 'Все типы') {
-                filteredItems = filteredItems.filter(item => item.type === state.selectedType);
-            }
+    // Actions
+    const addFavorite = (card: Card) => {
+        if (!favorites.value.some(fav => fav.id === card.id)) {
+            favorites.value.push(card);
+        }
+    };
 
-            if (state.searchTerm) {
-                filteredItems = filteredItems.filter(item =>
-                    item.title.toLowerCase().includes(state.searchTerm)
-                );
-            }
+    const removeFavorite = (cardId: number) => {
+        favorites.value = favorites.value.filter(fav => fav.id !== cardId);
+    };
 
-            return filteredItems;
-        },
-        getFavorites: (state) => {
-            return state.favorites;
-        },
-        getDeals: (state) => {
-            return state.deals;
-        },
-        isFavorite: (state) => (cardId: number) => {
-            return state.favorites.some(fav => fav.id === cardId);
-        },
-        isDeal: (state) => (cardId: number) => {
-            return state.deals.some(deal => deal.id === cardId);
-        },
-        isPaid: (state) => (cardId: number) => state.paidDeals.some(deal => deal.id === cardId),
-    },
+    const toggleFavorite = (card: Card) => {
+        const isFavorite = favorites.value.some(fav => fav.id === card.id);
+        if (isFavorite) {
+            removeFavorite(card.id);
+        } else {
+            addFavorite(card);
+        }
+    };
+
+    const addDeal = (card: Card) => {
+        if (!deals.value.some(deal => deal.id === card.id)) {
+            deals.value.push(card);
+        }
+    };
+
+    const payDeal = (cardId: number) => {
+        const deal = deals.value.find(deal => deal.id === cardId);
+        if (deal && !paidDeals.value.some(paidDeal => paidDeal.id === cardId)) {
+            paidDeals.value.push(deal);
+        }
+    };
+
+    const searchCards = (term: string) => {
+        searchTerm.value = term.toLowerCase();
+    };
+
+    const filterByType = (type: string) => {
+        selectedType.value = type;
+    };
+
+    // Getters
+    const filterItems = (itemsArray: Card[]) => {
+        let filteredItems = itemsArray;
+
+        if (selectedType.value !== 'Все типы') {
+            filteredItems = filteredItems.filter(item => item.type === selectedType.value);
+        }
+
+        if (searchTerm.value) {
+            filteredItems = filteredItems.filter(item =>
+                item.title.toLowerCase().includes(searchTerm.value)
+            );
+        }
+
+        return filteredItems;
+    };
+
+    const getAllItems = computed(() => filterItems(items.value));
+    const getFilteredFavorites = computed(() => filterItems(favorites.value));
+    const getFilteredDeals = computed(() => filterItems(deals.value));
+    const isFavorite = (cardId: number) => favorites.value.some(fav => fav.id === cardId);
+    const isDeal = (cardId: number) => deals.value.some(deal => deal.id === cardId);
+    const isPaid = (cardId: number) => paidDeals.value.some(deal => deal.id === cardId);
+
+    return {
+        items,
+        favorites,
+        deals,
+        paidDeals,
+        searchTerm,
+        selectedType,
+        addFavorite,
+        removeFavorite,
+        toggleFavorite,
+        addDeal,
+        payDeal,
+        searchCards,
+        filterByType,
+        getAllItems,
+        getFilteredFavorites,
+        getFilteredDeals,
+        isFavorite,
+        isDeal,
+        isPaid,
+    };
 });

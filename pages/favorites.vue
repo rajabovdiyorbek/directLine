@@ -29,25 +29,7 @@ const onSearchChanged = (newSearchTerm: string) => {
   searchTerm.value = newSearchTerm;
 };
 
-const filteredFavoriteItems = computed(() => {
-  let filteredFavorites = store.getFavorites;
-
-  if (currentType.value !== "Все типы") {
-    filteredFavorites = filteredFavorites.filter(
-      (fav) => fav.type === currentType.value
-    );
-  }
-
-  if (searchTerm.value) {
-    filteredFavorites = filteredFavorites.filter(
-      (fav) =>
-        fav.title.toLowerCase().includes(searchTerm.value) ||
-        fav.description.toLowerCase().includes(searchTerm.value)
-    );
-  }
-
-  return filteredFavorites;
-});
+const filteredFavoriteItems = computed(() => store.getFilteredFavorites);
 </script>
 
 <style lang="scss" scoped></style>
