@@ -46,7 +46,7 @@ export const useCardsStore = defineStore('cards', {
         },
         payDeal(cardId: number) {
             const deal = this.deals.find(deal => deal.id === cardId);
-            if (deal) {
+            if (deal && !this.paidDeals.some(paidDeal => paidDeal.id === cardId)) {
                 this.paidDeals.push(deal);
             }
         },

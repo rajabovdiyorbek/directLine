@@ -49,14 +49,29 @@
         <div class="buttons">
           <div
             v-if="warehouse"
-            class="add__btn"
+            :class="['add__btn', isDeal(item.id) ? 'btn-added' : 'btn-add']"
             @click="handleAddToDeals(item)"
           >
             {{ isDeal(item.id) ? "Добавлено" : "Добавить в сделки" }}
           </div>
-          <div v-else class="add__btn" @click="handleAddToDeals(item)">
+          <div
+            v-else
+            :class="[
+              'add__btn',
+              isDeal(item.id)
+                ? store.isPaid(item.id)
+                  ? 'btn-paid'
+                  : 'btn-pay'
+                : 'btn-add',
+            ]"
+            :disabled="store.isPaid(item.id)"
+            @click="
+              isDeal(item.id) ? handlePayDeal(item) : handleAddToDeals(item)
+            "
+          >
             {{ getButtonText(item.id) }}
           </div>
+
           <div
             :class="['favorite__btn', { active: isFavorite(item.id) }]"
             @click="toggleFavorite(item)"
@@ -133,6 +148,9 @@ const getButtonText = (cardId: number) => {
   return store.isDeal(cardId) ? "Добавлено" : "Добавить в сделки";
 };
 
+const handlePayDeal = (card: Card) => {
+  store.payDeal(card.id);
+};
 const isFavorite = (cardId: number) => {
   return store.isFavorite(cardId);
 };
@@ -286,11 +304,30 @@ const isDeal = (cardId: number) => {
         gap: 12px;
 
         .add__btn {
+          width: 222px;
+          text-align: center;
           border-radius: 10px;
           color: #2d3b87;
           background: #f4f5f9;
           padding: 17.5px 35px;
           cursor: pointer;
+        }
+        .btn-add {
+          background-color: #f4f5f9;
+          color: #2d3b87;
+        }
+
+        .btn-added {
+          color: #969dc3;
+        }
+
+        .btn-pay {
+          background-color: #69c57f;
+          color: white;
+        }
+
+        .btn-paid {
+          color: #969dc3;
         }
 
         .favorite__btn {
