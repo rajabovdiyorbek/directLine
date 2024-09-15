@@ -1,17 +1,16 @@
 <template>
   <SearchTabs />
-  <Cards />
+  <Cards :cards="favoriteItems" />
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { computed } from "vue";
 import { useCardsStore } from "../stores/cards";
 
 const store = useCardsStore();
 
-onMounted(() => {
-  store.filterItems("favorite criteria");
-});
+// Получаем избранные карточки из стора
+const favoriteItems = computed(() => store.getFavorites);
 </script>
 
 <style lang="scss" scoped></style>

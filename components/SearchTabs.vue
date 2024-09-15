@@ -7,13 +7,7 @@
     </div>
 
     <div class="search-container">
-      <input
-        v-model="searchQuery"
-        @input="applyFilter"
-        type="text"
-        class="search-input"
-        placeholder="Поиск"
-      />
+      <input type="text" class="search-input" placeholder="Поиск" />
       <button class="search-btn">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -45,21 +39,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, watch } from "vue";
-import { useCardsStore } from "../stores/cards";
-
-const store = useCardsStore();
-const searchQuery = ref("");
-
-function applyFilter() {
-  store.filterItems(searchQuery.value);
-}
-
-watch(searchQuery, () => {
-  store.filterItems(searchQuery.value);
-});
-</script>
+<script setup lang="ts"></script>
 
 <style scoped lang="scss">
 .container {

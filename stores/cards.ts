@@ -18,31 +18,47 @@ interface Card {
 export const useCardsStore = defineStore('cards', {
     state: () => ({
         items: data as Card[],
-        filteredItems: [] as Card[],
-        noResultsMessage: ''
+        favorites: [] as Card[],
+        deals: [] as Card[],
     }),
     actions: {
-        filterItems(criteria: string) {
-            if (criteria.trim() === '') {
-                this.filteredItems = [...this.items];
-                this.noResultsMessage = '';
-            } else {
-                const lowercasedCriteria = criteria.toLowerCase();
-                this.filteredItems = this.items.filter(item =>
-                    item.title.toLowerCase().includes(lowercasedCriteria)
-                );
-                this.noResultsMessage = this.filteredItems.length ? '' : 'Ничего не найдено по запросу';
+        addFavorite(card: Card) {
+            if (!this.favorites.some(fav => fav.id === card.id)) {
+                this.favorites.push(card);
             }
         },
-        resetFilters() {
-            this.filteredItems = [...this.items];
-            this.noResultsMessage = '';
-        }
+        removeFavorite(cardId: number) {
+            this.favorites = this.favorites.filter(fav => fav.id !== cardId);
+        },
+        toggleFavorite(card: Card) {
+            const isFavorite = this.favorites.some(fav => fav.id === card.id);
+            if (isFavorite) {
+                this.removeFavorite(card.id);
+            } else {
+                this.addFavorite(card);
+            }
+        },
+        addDeal(card: Card) {
+            if (!this.deals.some(deal => deal.id === card.id)) {
+                this.deals.push(card);
+            }
+        },
     },
     getters: {
-        getItems: (state) => {
-            return state.filteredItems.length > 0 || !state.noResultsMessage ? state.filteredItems : [];
+        getAllItems: (state) => {
+            return state.items
         },
-        getNoResultsMessage: (state) => state.noResultsMessage
+        getFavorites: (state) => {
+            return state.favorites
+        },
+        getDeals: (state) => {
+            return state.deals;
+        },
+        isFavorite: (state) => (cardId: number) => {
+            return state.favorites.some(fav => fav.id === cardId);
+        },
+        isDeal: (state) => (cardId: number) => {
+            return state.deals.some(deal => deal.id === cardId);
+        },
     },
 });

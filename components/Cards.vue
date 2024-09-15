@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="items" v-for="item in items" :key="item.id" class="card">
+    <div v-for="item in cards" :key="item.id" class="card">
       <div class="card__left">
         <img :src="item.img" alt="Product image" />
         <div class="content">
@@ -47,8 +47,13 @@
           </div>
         </div>
         <div class="buttons">
-          <div class="add__btn">Добавить в сделки</div>
-          <div class="favorite__btn">
+          <div class="add__btn" @click="handleAddToDeals(item)">
+            {{ isDeal(item.id) ? "Добавлено" : "Добавить в сделки" }}
+          </div>
+          <div
+            :class="['favorite__btn', { active: isFavorite(item.id) }]"
+            @click="toggleFavorite(item)"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -59,26 +64,62 @@
               <path
                 fill-rule="evenodd"
                 clip-rule="evenodd"
+                :fill="isFavorite(item.id) ? '#FFFFFF' : '#2D3B87'"
                 d="M4.33423 5.15646C3.76936 5.66876 3.37143 6.48526 3.37143 7.72395C3.37143 8.49178 3.74054 9.37595 4.39401 10.3171C5.0395 11.2468 5.91325 12.1619 6.80764 12.9768C7.69901 13.7889 8.59325 14.4856 9.26619 14.98C9.5571 15.1937 9.80563 15.3689 9.99334 15.4985C10.182 15.3641 10.4326 15.1821 10.7264 14.9604C11.4003 14.4517 12.296 13.7378 13.1889 12.9135C14.0848 12.0864 14.9605 11.1642 15.6075 10.2403C16.2647 9.30178 16.6286 8.44202 16.6286 7.72398C16.6286 5.85557 15.1163 4.35487 13.2692 4.35487C12.1581 4.35487 11.1713 4.89912 10.5565 5.74372C10.4277 5.92072 10.2205 6.02564 9.99979 6.02563C9.77911 6.02562 9.57192 5.92069 9.44309 5.74369C8.82837 4.89912 7.84181 4.35487 6.73039 4.35487C5.73916 4.35487 4.90933 4.63487 4.33423 5.15646ZM9.99982 16.3229C9.62433 16.8897 9.6242 16.8897 9.62404 16.8896L9.62215 16.8883L9.61733 16.8852L9.5999 16.8738C9.58488 16.864 9.56313 16.8497 9.5351 16.831C9.47905 16.7938 9.39785 16.7394 9.29508 16.669C9.08961 16.5284 8.79758 16.3242 8.44779 16.0672C7.74933 15.554 6.81505 14.8266 5.87789 13.9728C4.94375 13.1217 3.98898 12.129 3.26308 11.0835C2.54515 10.0495 2 8.89125 2 7.72395C2 6.1806 2.50766 4.97383 3.40677 4.15839C4.29563 3.35224 5.48815 3 6.73039 3C8.00311 3 9.15307 3.50391 9.99985 4.31539C10.8467 3.50391 11.9967 3 13.2692 3C15.8899 3 18 5.12338 18 7.72398C18 8.85265 17.4496 9.99111 16.7353 11.0111C16.0108 12.0458 15.0579 13.0425 14.1252 13.9034C13.1895 14.7672 12.2565 15.5105 11.559 16.037C11.2097 16.3007 10.9181 16.5109 10.7131 16.6559C10.6105 16.7284 10.5295 16.7845 10.4736 16.823C10.4457 16.8422 10.424 16.8569 10.4091 16.8671L10.3918 16.8788L10.3871 16.882L10.3857 16.8829C10.3855 16.883 10.385 16.8834 9.99982 16.3229ZM9.99982 16.3229L10.3857 16.8829C10.1567 17.0365 9.85564 17.0393 9.62404 16.8896L9.99982 16.3229Z"
-                fill="#2D3B87"
               />
             </svg>
           </div>
         </div>
       </div>
     </div>
-    <div v-else class="card">
-      <h1>Ничего не найдено по запросу</h1>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { PropType } from "vue";
 import { useCardsStore } from "../stores/cards";
 
+// Определим интерфейс карточки
+interface Card {
+  id: number;
+  type: string;
+  title: string;
+  address: string;
+  seller: string;
+  productType: string;
+  description: string;
+  price: string;
+  quantity: string;
+  pricePerUnit: string;
+  img: string;
+}
+
+// Получаем карточки через пропс
+const props = defineProps({
+  cards: {
+    type: Array as PropType<Card[]>,
+    required: true,
+  },
+});
+
 const store = useCardsStore();
-const items = computed(() => store.getItems);
+
+// Методы для избранных карточек
+const toggleFavorite = (card: Card) => {
+  store.toggleFavorite(card);
+};
+
+const handleAddToDeals = (card: Card) => {
+  store.addDeal(card);
+};
+
+const isFavorite = (cardId: number) => {
+  return store.isFavorite(cardId);
+};
+
+const isDeal = (cardId: number) => {
+  return store.isDeal(cardId);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -237,6 +278,9 @@ const items = computed(() => store.getItems);
           background: #f4f5f9;
           padding: 17px 16px 13px 14px;
           cursor: pointer;
+        }
+        .favorite__btn.active {
+          background-color: #2d3b87;
         }
       }
     }
