@@ -1,20 +1,8 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import data from '../data/data.json';
+import { Card } from "../types/card";
 
-interface Card {
-    id: number;
-    type: string;
-    title: string;
-    address: string;
-    seller: string;
-    productType: string;
-    description: string;
-    price: string;
-    quantity: string;
-    pricePerUnit: string;
-    img: string;
-}
 
 export const useCardsStore = defineStore('cards', () => {
     // State
