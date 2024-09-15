@@ -49,27 +49,20 @@
         <div class="buttons">
           <div
             v-if="warehouse"
-            :class="['add__btn', isDeal(item.id) ? 'btn-added' : 'btn-add']"
+            :class="buttonClass(item.id)"
             @click="handleAddToDeals(item)"
           >
-            {{ isDeal(item.id) ? "Добавлено" : "Добавить в сделки" }}
+            {{ buttonText(item.id) }}
           </div>
           <div
             v-else
-            :class="[
-              'add__btn',
-              isDeal(item.id)
-                ? store.isPaid(item.id)
-                  ? 'btn-paid'
-                  : 'btn-pay'
-                : 'btn-add',
-            ]"
+            :class="buttonClass(item.id)"
             :disabled="store.isPaid(item.id)"
             @click="
               isDeal(item.id) ? handlePayDeal(item) : handleAddToDeals(item)
             "
           >
-            {{ getButtonText(item.id) }}
+            {{ buttonText(item.id) }}
           </div>
 
           <div
@@ -98,10 +91,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { computed, PropType } from "vue";
 import { useCardsStore } from "../stores/cards";
 
-// Определим интерфейс карточки
 interface Card {
   id: number;
   type: string;
@@ -116,7 +108,6 @@ interface Card {
   img: string;
 }
 
-// Получаем карточки через пропс
 const props = defineProps({
   cards: {
     type: Array as PropType<Card[]>,
@@ -138,26 +129,49 @@ const toggleFavorite = (card: Card) => {
 const handleAddToDeals = (card: Card) => {
   store.addDeal(card);
 };
-const getButtonText = (cardId: number) => {
-  if (!props.warehouse) {
-    if (store.isDeal(cardId)) {
-      return store.isPaid(cardId) ? "Оплачено" : "Оплатить";
-    }
-    return "Добавить в сделки";
-  }
-  return store.isDeal(cardId) ? "Добавлено" : "Добавить в сделки";
-};
 
 const handlePayDeal = (card: Card) => {
   store.payDeal(card.id);
 };
-const isFavorite = (cardId: number) => {
-  return store.isFavorite(cardId);
-};
 
-const isDeal = (cardId: number) => {
-  return store.isDeal(cardId);
-};
+const buttonText = computed(() => {
+  return (itemId: number) => {
+    if (props.warehouse) {
+      return store.isDeal(itemId) ? "Добавлено" : "Добавить в сделки";
+    } else {
+      return store.isDeal(itemId)
+        ? store.isPaid(itemId)
+          ? "Оплачено"
+          : "Оплатить"
+        : "Добавить в сделки";
+    }
+  };
+});
+
+const buttonClass = computed(() => {
+  return (itemId: number) => {
+    if (props.warehouse) {
+      return ["add__btn", store.isDeal(itemId) ? "btn-added" : "btn-add"];
+    } else {
+      return [
+        "add__btn",
+        store.isDeal(itemId)
+          ? store.isPaid(itemId)
+            ? "btn-paid"
+            : "btn-pay"
+          : "btn-add",
+      ];
+    }
+  };
+});
+
+const isFavorite = computed(() => {
+  return (itemId: number) => store.isFavorite(itemId);
+});
+
+const isDeal = computed(() => {
+  return (itemId: number) => store.isDeal(itemId);
+});
 </script>
 
 <style lang="scss" scoped>
