@@ -1,13 +1,37 @@
 <template>
   <div class="container">
     <div class="tabs">
-      <div class="tab active">Все типы</div>
-      <div class="tab">Прямые продажи</div>
-      <div class="tab">Аукцион</div>
+      <div
+        class="tab"
+        :class="{ active: currentType === 'Все типы' }"
+        @click="updateType('Все типы')"
+      >
+        Все типы
+      </div>
+      <div
+        class="tab"
+        :class="{ active: currentType === 'Прямые продажи' }"
+        @click="updateType('Прямые продажи')"
+      >
+        Прямые продажи
+      </div>
+      <div
+        class="tab"
+        :class="{ active: currentType === 'Аукцион' }"
+        @click="updateType('Аукцион')"
+      >
+        Аукцион
+      </div>
     </div>
 
     <div class="search-container">
-      <input type="text" class="search-input" placeholder="Поиск" />
+      <input
+        type="text"
+        class="search-input"
+        v-model="searchInput"
+        @input="updateSearch"
+        placeholder="Поиск"
+      />
       <button class="search-btn">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +63,35 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, watch } from "vue";
+
+const props = defineProps({
+  currentType: String,
+  searchTerm: String,
+});
+
+const emit = defineEmits(["typeChanged", "searchChanged"]);
+
+const searchInput = ref(props.searchTerm);
+
+// Emit changes to the parent
+const updateType = (type: string) => {
+  emit("typeChanged", type);
+};
+
+const updateSearch = () => {
+  emit("searchChanged", searchInput.value);
+};
+
+// Watch for prop changes to update local state
+watch(
+  () => props.searchTerm,
+  (newVal) => {
+    searchInput.value = newVal;
+  }
+);
+</script>
 
 <style scoped lang="scss">
 .container {

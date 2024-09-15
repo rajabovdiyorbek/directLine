@@ -21,6 +21,8 @@ export const useCardsStore = defineStore('cards', {
         favorites: [] as Card[],
         deals: [] as Card[],
         paidDeals: [] as Card[],
+        searchTerm: '', // Для поиска
+        selectedType: 'Все типы', // Для фильтрации по типу
     }),
     actions: {
         addFavorite(card: Card) {
@@ -50,13 +52,31 @@ export const useCardsStore = defineStore('cards', {
                 this.paidDeals.push(deal);
             }
         },
+        searchCards(term: string) {
+            this.searchTerm = term.toLowerCase();
+        },
+        filterByType(type: string) {
+            this.selectedType = type;
+        },
     },
     getters: {
         getAllItems: (state) => {
-            return state.items
+            let filteredItems = state.items;
+
+            if (state.selectedType !== 'Все типы') {
+                filteredItems = filteredItems.filter(item => item.type === state.selectedType);
+            }
+
+            if (state.searchTerm) {
+                filteredItems = filteredItems.filter(item =>
+                    item.title.toLowerCase().includes(state.searchTerm)
+                );
+            }
+
+            return filteredItems;
         },
         getFavorites: (state) => {
-            return state.favorites
+            return state.favorites;
         },
         getDeals: (state) => {
             return state.deals;
