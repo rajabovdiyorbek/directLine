@@ -331,10 +331,12 @@ const isDeal = (cardId: number) => {
         }
 
         .favorite__btn {
-          border-radius: 10px;
+          height: 50px;
           background: #f4f5f9;
-          padding: 17px 16px 13px 14px;
+          border-radius: 10px;
           cursor: pointer;
+          padding: 15px;
+          padding: 16px 16px 13px 14px;
         }
         .favorite__btn.active {
           background-color: #2d3b87;
