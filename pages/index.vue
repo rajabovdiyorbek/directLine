@@ -1,6 +1,6 @@
 <template>
   <SearchTabs />
-  <Cards :cards="cards" />
+  <Cards :cards="cards" warehouse />
 </template>
 
 <script setup lang="ts">

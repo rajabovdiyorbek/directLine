@@ -47,8 +47,15 @@
           </div>
         </div>
         <div class="buttons">
-          <div class="add__btn" @click="handleAddToDeals(item)">
+          <div
+            v-if="warehouse"
+            class="add__btn"
+            @click="handleAddToDeals(item)"
+          >
             {{ isDeal(item.id) ? "Добавлено" : "Добавить в сделки" }}
+          </div>
+          <div v-else class="add__btn" @click="handleAddToDeals(item)">
+            {{ getButtonText(item.id) }}
           </div>
           <div
             :class="['favorite__btn', { active: isFavorite(item.id) }]"
@@ -100,6 +107,10 @@ const props = defineProps({
     type: Array as PropType<Card[]>,
     required: true,
   },
+  warehouse: {
+    type: Boolean,
+    required: false,
+  },
 });
 
 const store = useCardsStore();
@@ -111,6 +122,15 @@ const toggleFavorite = (card: Card) => {
 
 const handleAddToDeals = (card: Card) => {
   store.addDeal(card);
+};
+const getButtonText = (cardId: number) => {
+  if (!props.warehouse) {
+    if (store.isDeal(cardId)) {
+      return store.isPaid(cardId) ? "Оплачено" : "Оплатить";
+    }
+    return "Добавить в сделки";
+  }
+  return store.isDeal(cardId) ? "Добавлено" : "Добавить в сделки";
 };
 
 const isFavorite = (cardId: number) => {

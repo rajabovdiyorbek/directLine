@@ -20,6 +20,7 @@ export const useCardsStore = defineStore('cards', {
         items: data as Card[],
         favorites: [] as Card[],
         deals: [] as Card[],
+        paidDeals: [] as Card[],
     }),
     actions: {
         addFavorite(card: Card) {
@@ -43,6 +44,12 @@ export const useCardsStore = defineStore('cards', {
                 this.deals.push(card);
             }
         },
+        payDeal(cardId: number) {
+            const deal = this.deals.find(deal => deal.id === cardId);
+            if (deal) {
+                this.paidDeals.push(deal);
+            }
+        },
     },
     getters: {
         getAllItems: (state) => {
@@ -60,5 +67,6 @@ export const useCardsStore = defineStore('cards', {
         isDeal: (state) => (cardId: number) => {
             return state.deals.some(deal => deal.id === cardId);
         },
+        isPaid: (state) => (cardId: number) => state.paidDeals.some(deal => deal.id === cardId),
     },
 });
